@@ -1,0 +1,99 @@
+Banco de Dados
+Inicie o MySQL
+
+Execute o script database.sql para criar as tabelas
+
+🎯 Como usar
+Acesse http://localhost:5173
+
+Registre-se ou faça login
+
+Adicione suas contas a pagar/receber
+
+Acompanhe no dashboard
+
+📸 Screenshots
+[Adicione prints do seu sistema aqui]
+
+🛠️ Configuração do Banco de Dados
+Execute o seguinte script SQL:
+
+CREATE DATABASE sistema_financeiro;
+USE sistema_financeiro;
+
+-- Tabela de usuários
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de contas
+CREATE TABLE accounts (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    amount DECIMAL(10,2) NOT NULL,
+    type ENUM('pagar', 'receber') NOT NULL,
+    status ENUM('pendente', 'pago', 'vencido') DEFAULT 'pendente',
+    due_date DATE NOT NULL,
+    payment_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+🌟 Funcionalidades em Destaque
+Dark Mode
+O sistema possui dark mode integrado que:
+
+Detecta preferência do sistema
+
+Persiste escolha do usuário
+
+Transição suave entre temas
+
+Dashboard
+Cards com totais
+
+Contas a pagar/receber
+
+Saldo previsto
+
+Próximos vencimentos
+
+CRUD de Contas
+Criar contas com título, descrição, valor, tipo e vencimento
+
+Editar informações
+
+Excluir com confirmação
+
+Marcar como pago
+
+Filtrar por tipo e status
+
+Paginação
+
+📁 Estrutura do Projeto
+
+sistema-financeiro/
+├── backend/
+│   ├── controllers/
+│   ├── routes/
+│   ├── middleware/
+│   ├── config/
+│   └── app.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── index.html
+└── database.sql
+
