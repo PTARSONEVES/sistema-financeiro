@@ -48,14 +48,17 @@ export function AuthProvider({ children }) {
             
             const { token, user } = response.data
 
+            // IMPORTANTE: verificar o token antes de salvar
+            console.log('📌 Token recebido do backend:', token ? token.substring(0, 30) + '...' : 'Nulo')
+
             localStorage.setItem('token', token)
             setUser(user)
             return { success: true }
         } catch (error) {
             console.error('❌ Erro no login:', error.response?.data || error.message)
-            const errorMessage = error.response?.data?.error || 'Erro ao fazer login'
-            setError(errorMessage)
-            return { success: false, error: errorMessage }
+//            const errorMessage = error.response?.data?.error || 'Erro ao fazer login'
+//            setError(errorMessage)
+            return { success: false, error: error.response?.data?.error || 'Erro ao fazer login'  }
         }
     }
 

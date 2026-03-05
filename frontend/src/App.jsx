@@ -9,6 +9,12 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Accounts from './pages/Accounts'
 import AccountForm from './pages/AccountForm'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import ChangePassword from './pages/ChangePassword'
+// Importar páginas do hotel
+import RoomMap from './modules/hotel/pages/RoomMap';
+import RoomList from './modules/hotel/pages/RoomList';
 
 function PrivateRoute({ children }) {
     const { user } = useAuth()
@@ -60,7 +66,33 @@ function AppContent() {
                             </PrivateRoute>
                         }
                     />
+                    <Route
+                        path="/hotel/map"
+                        element={
+                            <PrivateRoute>
+                                <RoomMap />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/hotel/rooms"
+                        element={
+                            <PrivateRoute>
+                                <RoomList />
+                            </PrivateRoute>
+                        }
+                    />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route
+                        path="/change-password"
+                        element={
+                            <PrivateRoute>
+                                <ChangePassword />
+                            </PrivateRoute>
+                        }
+                    />
                 </Routes>
             </div>
         </div>

@@ -52,7 +52,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-
+        console.log('📌 Tentativa de login:', email);
         // Buscar usuário
         const [users] = await pool.query(
             'SELECT * FROM users WHERE email = ?',
@@ -72,11 +72,14 @@ exports.login = async (req, res) => {
         }
 
         // Gerar token
+        console.log('📌 JWT_SECRET usado para gerar token:', process.env.JWT_SECRET ? '******' : 'NÃO DEFINIDO');
         const token = jwt.sign(
             { id: user.id },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN }
         );
+
+        console.log('✅ Token gerado com sucesso para usuário:', user.id);
 
         res.json({
             message: 'Login realizado com sucesso',
@@ -84,7 +87,7 @@ exports.login = async (req, res) => {
             user: { id: user.id, name: user.name, email: user.email }
         });
     } catch (error) {
-        console.error(error);
+        console.error('❌ Erro no login:',error);
         res.status(500).json({ error: 'Erro no servidor' });
     }
 };

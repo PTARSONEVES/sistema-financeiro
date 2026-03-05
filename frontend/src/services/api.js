@@ -12,11 +12,21 @@ const api = axios.create({
 api.interceptors.request.use(
     config => {
         const token = localStorage.getItem('token');
+
+        console.log('🔍 Token no localStorage:', token ? 'Presente' : 'Ausente');
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
             console.log('📤 Requisição com token:', config.url);
+
+            console.log('📤 Requisição:', config.method.toUpperCase(), config.url);
+            console.log('📤 Headers:', config.headers);
+            
         } else {
             console.log('📤 Requisição sem token:', config.url);
+
+            console.log('❌ Sem token - redirecionando para login');
+
         }
         return config;
     },
@@ -28,12 +38,17 @@ api.interceptors.request.use(
 // Interceptor para tratar erros de resposta
 api.interceptors.response.use(
     response => {
+
+        console.log('📥 Resposta:', response.status, response.config.url);
+
         console.log('📥 Resposta recebida:', response.config.url, response.status);
         return response;
     },
     error => {
         console.error('❌ Erro na requisição:', error.response?.status, error.config?.url);
-        
+
+       console.error('❌ Detalhes:', error.response?.data);
+
         if (error.response?.status === 401) {
             // Token expirado ou inválido
             console.log('🚫 Token inválido, redirecionando para login...');

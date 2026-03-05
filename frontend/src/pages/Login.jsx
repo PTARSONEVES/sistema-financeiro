@@ -109,7 +109,6 @@ export default function Login() {
               required
             />
           </div>
-          
           <div>
             <label style={styles.label}>Senha</label>
             <input
@@ -120,18 +119,25 @@ export default function Login() {
               required
             />
           </div>
-
           <button type="submit" style={styles.button}>
             Entrar
           </button>
         </form>
-        
         <p style={{ textAlign: 'center', marginTop: '1rem', color: darkMode ? '#cbd5e0' : '#4a5568' }}>
           Não tem uma conta?{' '}
           <Link to="/register" style={styles.link}>
             Registre-se
           </Link>
         </p>
+        <div className="flex items-center justify-between mt-4">
+            <Link
+                to="/forgot-password"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            >
+                Esqueceu a senha?
+          </Link>
+        </div>        
+
       </div>
     </div>
   )

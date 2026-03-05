@@ -4,6 +4,8 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const accountRoutes = require('./routes/accountRoutes');
+// Importar módulo do hotel
+const hotelRoutes = require('./modules/hotel/routes/hotelRoutes');
 
 const app = express();
 
@@ -18,7 +20,7 @@ app.use(express.json());
 // Rotas
 app.use('/api/auth', authRoutes);
 app.use('/api/accounts', accountRoutes);
-
+app.use('/api/hotel', hotelRoutes);
 // Rota de teste
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Servidor funcionando!' });
