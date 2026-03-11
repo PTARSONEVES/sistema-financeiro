@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Token</title>
+</head>
+<body>
+    <h1>Debug de Autenticação</h1>
+    
+    <div id="status">Carregando...</div>
+    <div id="token-info"></div>
+    <div id="test-result"></div>
+    
+    <button onclick="testToken()">Testar Token</button>
+    <button onclick="clearToken()">Limpar Token</button>
+    <button onclick="redirectToLogin()">Ir para Login</button>
+    
+    <script>
+        function testToken() {
+            const token = localStorage.getItem('token');
+            const div = document.getElementById('test-result');
+            
+            if (!token) {
+                div.innerHTML = '❌ Nenhum token encontrado';
+                return;
+            }
+            
+            div.innerHTML = '🔍 Testando token...';
+            
+            fetch('http://localhost:3000/api/hotel/test-auth', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => {
+                if (res.ok) {
+                    return res.json().then(data => {
+                        div.innerHTML = '✅ Token VÁLIDO! ' + JSON.stringify(data);
+                    });
+                } else {
+                    return res.json().then(data => {
+                        div.innerHTML = '❌ Token INVÁLIDO: ' + JSON.stringify(data);
+                    });
+                }
+            })
+            .catch(err => {
+                div.innerHTML = '❌ Erro: ' + err.message;
+            });
+        }
+        
+        function clearToken() {
+            localStorage.clear();
+            document.getElementById('token-info').innerHTML = 'Token removido';
+            document.getElementById('test-result').innerHTML = '';
+        }
+        
+        function redirectToLogin() {
+            window.location.href = '/login';
+        }
+        
+        // Mostrar token atual
+        const token = localStorage.getItem('token');
+        const tokenDiv = document.getElementById('token-info');
+        
+        if (token) {
+            const parts = token.split('.');
+            tokenDiv.innerHTML = `
+                <strong>Token encontrado:</strong> ${token.substring(0, 30)}...<br>
+                <strong>Partes:</strong> ${parts.length}<br>
+                <strong>Formato:</strong> ${parts.length === 3 ? '✅ Válido' : '❌ Inválido'}<br>
+            `;
+            
+            if (parts.length === 3) {
+                try {
+                    const payload = JSON.parse(atob(parts[1]));
+                    tokenDiv.innerHTML += `
+                        <strong>Payload:</strong> ${JSON.stringify(payload)}<br>
+                        <strong>Expira:</strong> ${new Date(payload.exp * 1000).toLocaleString()}<br>
+                    `;
+                } catch (e) {
+                    tokenDiv.innerHTML += `<strong>Erro ao decodificar:</strong> ${e.message}`;
+                }
+            }
+        } else {
+            tokenDiv.innerHTML = '❌ Nenhum token encontrado. Faça login primeiro.';
+        }
+        
+        document.getElementById('status').innerHTML = '✅ Diagnóstico carregado';
+    </script>
+</body>
+</html>

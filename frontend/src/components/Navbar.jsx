@@ -97,6 +97,11 @@ export default function Navbar() {
                                     </svg>
                                     <span className="hidden md:inline">Alterar Senha</span>
                                 </Link>
+                                <Link to="/hotel/dashboard" className="...">Dashboard Hotel</Link>
+                                <Link to="/hotel/map" className="...">Mapa</Link>
+                                <Link to="/hotel/calendar" className="...">Calendário</Link>
+                                <Link to="/hotel/bookings" className="...">Reservas</Link>
+                                <Link to="/hotel/guests" className="...">Hóspedes</Link>
                             </div>
                         )}
                     </div>

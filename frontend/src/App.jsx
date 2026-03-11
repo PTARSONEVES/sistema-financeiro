@@ -12,13 +12,37 @@ import AccountForm from './pages/AccountForm'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import ChangePassword from './pages/ChangePassword'
+import TestPage from './pages/TestPage'
+import AuthTest from './pages/AuthTest'
 // Importar páginas do hotel
 import RoomMap from './modules/hotel/pages/RoomMap';
 import RoomList from './modules/hotel/pages/RoomList';
+import GuestList from './modules/hotel/pages/GuestList';
+import BookingList from './modules/hotel/pages/BookingList';
+import AvailabilityCalendar from './modules/hotel/pages/AvailabilityCalendar';
+import Consumption from './modules/hotel/pages/Consumption';
+import Reports from './modules/hotel/pages/Reports';
 
 function PrivateRoute({ children }) {
-    const { user } = useAuth()
-    return user ? children : <Navigate to="/login" />
+    const { user, loading } = useAuth();
+    
+    console.log('🔍 PrivateRoute - user:', user);
+    console.log('🔍 PrivateRoute - loading:', loading);
+    console.log('🔍 PrivateRoute - token:', localStorage.getItem('token'));
+    
+    if (loading) {
+        return <div className="min-h-screen flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>;
+    }
+    
+    if (!user) {
+        console.log('❌ Usuário não logado, redirecionando...');
+        return <Navigate to="/login" />;
+    }
+    
+    console.log('✅ Usuário logado, renderizando conteúdo');
+    return children;
 }
 
 function AppContent() {
@@ -82,6 +106,40 @@ function AppContent() {
                             </PrivateRoute>
                         }
                     />
+                    <Route
+                        path="/hotel/guests"
+                        element={
+                            <PrivateRoute>
+                                <GuestList />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route 
+                        path="/hotel/bookings" 
+                        element={
+                            <PrivateRoute>
+                                <BookingList />
+                            </PrivateRoute>
+                        } 
+                    />
+                    <Route 
+                        path="/hotel/calendar" 
+                        element={
+                            <PrivateRoute>
+                                <AvailabilityCalendar />
+                            </PrivateRoute>
+                        } 
+                    />
+                    <Route path="/hotel/consumption" element={
+                        <PrivateRoute>
+                            <Consumption />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/hotel/reports" element={
+                        <PrivateRoute>
+                            <Reports />
+                        </PrivateRoute>
+                    } />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
@@ -93,6 +151,8 @@ function AppContent() {
                             </PrivateRoute>
                         }
                     />
+                    <Route path="/test" element={<TestPage />} />
+                    <Route path="/auth-test" element={<AuthTest />} />
                 </Routes>
             </div>
         </div>

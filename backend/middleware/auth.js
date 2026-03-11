@@ -23,7 +23,7 @@ module.exports = (req, res, next) => {
 
     try {
         console.log('📌 JWT_SECRET usado:', process.env.JWT_SECRET ? '******' : 'NÃO DEFINIDO');
-        
+       
         if (!process.env.JWT_SECRET) {
             console.log('❌ Erro: JWT_SECRET não está definido no .env');
             return res.status(500).json({ error: 'Erro de configuração do servidor' });

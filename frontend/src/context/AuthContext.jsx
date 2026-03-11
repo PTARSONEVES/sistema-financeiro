@@ -6,33 +6,41 @@ const AuthContext = createContext()
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
 
     useEffect(() => {
-        const token = localStorage.getItem('token')
-        if (token) {
-            loadUser()
-        } else {
-            setLoading(false)
-        }
+        console.log('🔍 AuthProvider montado')
+        loadUserFromToken()
     }, [])
 
-    const loadUser = async () => {
+    const loadUserFromToken = async () => {
         try {
-            setLoading(true)
-            // Você pode criar um endpoint /me no backend para buscar dados do usuário
-            // Por enquanto, vamos usar o token para saber que está logado
             const token = localStorage.getItem('token')
+            console.log('🔍 Token encontrado:', token ? 'Sim' : 'Não')
+            
             if (token) {
-                // Decodificar token JWT para pegar informações básicas (opcional)
-                const base64Url = token.split('.')[1]
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-                const payload = JSON.parse(window.atob(base64))
-                setUser({ id: payload.id, email: payload.email })
+                // Decodificar token para pegar informações do usuário
+                try {
+                    const base64Url = token.split('.')[1]
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+                    const payload = JSON.parse(window.atob(base64))
+                    
+                    console.log('🔍 Payload do token:', payload)
+                    
+                    // Aqui você pode buscar mais dados do usuário se necessário
+                    setUser({
+                        id: payload.id,
+                        email: payload.email || 'usuario@email.com',
+                        name: payload.name || 'Usuário'
+                    })
+                    
+                    console.log('✅ Usuário carregado do token:', payload.id)
+                } catch (e) {
+                    console.error('❌ Erro ao decodificar token:', e)
+                    localStorage.removeItem('token')
+                }
             }
         } catch (error) {
-            console.error('Erro ao carregar usuário:', error)
-            logout()
+            console.error('❌ Erro ao carregar usuário:', error)
         } finally {
             setLoading(false)
         }
@@ -40,53 +48,46 @@ export function AuthProvider({ children }) {
 
     const login = async (email, password) => {
         try {
-            setError(null)
-            console.log('🔑 Tentando login com:', email)
-            
+            console.log('🔑 Tentando login...')
             const response = await api.post('/auth/login', { email, password })
-            console.log('✅ Login response:', response.data)
-            
-            const { token, user } = response.data
+            const { token, user: userData } = response.data
 
-            // IMPORTANTE: verificar o token antes de salvar
-            console.log('📌 Token recebido do backend:', token ? token.substring(0, 30) + '...' : 'Nulo')
-
+            console.log('✅ Login bem-sucedido')
             localStorage.setItem('token', token)
-            setUser(user)
+            setUser(userData)
             return { success: true }
         } catch (error) {
-            console.error('❌ Erro no login:', error.response?.data || error.message)
-//            const errorMessage = error.response?.data?.error || 'Erro ao fazer login'
-//            setError(errorMessage)
-            return { success: false, error: error.response?.data?.error || 'Erro ao fazer login'  }
+            console.error('❌ Erro no login:', error)
+            return { 
+                success: false, 
+                error: error.response?.data?.error || 'Erro ao fazer login' 
+            }
         }
     }
 
     const register = async (name, email, password) => {
         try {
-            setError(null)
-            console.log('📝 Tentando registro:', { name, email })
-            
+            console.log('📝 Tentando registro...')
             const response = await api.post('/auth/register', { name, email, password })
-            console.log('✅ Register response:', response.data)
-            
-            const { token, user } = response.data
+            const { token, user: userData } = response.data
 
+            console.log('✅ Registro bem-sucedido')
             localStorage.setItem('token', token)
-            setUser(user)
+            setUser(userData)
             return { success: true }
         } catch (error) {
-            console.error('❌ Erro no registro:', error.response?.data || error.message)
-            const errorMessage = error.response?.data?.error || 'Erro ao registrar'
-            setError(errorMessage)
-            return { success: false, error: errorMessage }
+            console.error('❌ Erro no registro:', error)
+            return { 
+                success: false, 
+                error: error.response?.data?.error || 'Erro ao registrar' 
+            }
         }
     }
 
     const logout = () => {
+        console.log('👋 Logout')
         localStorage.removeItem('token')
         setUser(null)
-        console.log('👋 Logout realizado')
     }
 
     return (
@@ -95,8 +96,7 @@ export function AuthProvider({ children }) {
             login, 
             register, 
             logout, 
-            loading,
-            error 
+            loading 
         }}>
             {children}
         </AuthContext.Provider>
@@ -106,7 +106,7 @@ export function AuthProvider({ children }) {
 export const useAuth = () => {
     const context = useContext(AuthContext)
     if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider')
+        throw new Error('useAuth deve ser usado dentro de AuthProvider')
     }
     return context
 }
